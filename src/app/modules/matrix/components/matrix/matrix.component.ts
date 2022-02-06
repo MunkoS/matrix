@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormArray, FormControl, FormGroup} from "@angular/forms";
+import { FormArray, FormControl, FormGroup} from "@angular/forms";
 import { cloneDeep } from 'lodash';
 
 @Component({
@@ -10,11 +10,12 @@ import { cloneDeep } from 'lodash';
 
 
 export class MatrixComponent  implements OnInit {
-  public firstForm!: FormGroup;
+  public firstForm: FormGroup | null = null;
 
 
   public form = new FormGroup({
-    matrix: new FormArray([])
+    matrix: new FormArray([]),
+    algorithm : new FormControl(''),
   }
 );
 
@@ -40,7 +41,7 @@ export class MatrixComponent  implements OnInit {
       return 0;
   };
 
-  private removeColumnAndRowMatrix(matrix: any[]): any[] {
+  private removeColumnAndRowMatrixFirstStep(matrix: any[]): any[] {
 
     const lastColumn = matrix[matrix.length - 1] as number[];
     const oneIndexes: number[] = [];
@@ -53,18 +54,52 @@ export class MatrixComponent  implements OnInit {
     if(oneIndexes.length !==  lastColumn.length){
       matrix.pop();
       matrix.forEach(row=>{
-        oneIndexes.forEach(deleteIndex=>{
-          (row as number[]).splice(deleteIndex,1);
+        oneIndexes.forEach((deleteIndex,index)=>{
+          (row as number[]).splice(deleteIndex - index,1);
         })
       })
-      this.showNewMatrix(matrix);
-      return this.removeColumnAndRowMatrix(matrix);
+      this.showNewMatrix(matrix,'Удаление избыточный дисциплин ');
+      return this.removeColumnAndRowMatrixFirstStep(matrix);
     }
 
 
     return matrix;
   }
 
+
+  private removeColumnAndRowMatrixTwoStep(matrix: any[],currentIndex = 0): any[] {
+    const minIndex: number[] = [];
+    const currentColumn = matrix[currentIndex] as number[];
+    currentColumn.forEach((v,index) => {
+      if(v === 0){
+        minIndex.push(index)
+      }
+    })
+
+
+    if(minIndex.length > 0 && minIndex.length !== currentColumn.length){
+      matrix.forEach(row=>{
+        minIndex.forEach((deleteIndex,index)=>{
+          (row as number[]).splice(deleteIndex - index,1);
+        })
+      })
+    }
+
+
+
+      this.showNewMatrix(matrix,'Парето(оптимальное решение)');
+      currentIndex++;
+      if(matrix[currentIndex] && currentColumn.length > 1){
+        return this.removeColumnAndRowMatrixTwoStep(matrix,currentIndex);
+      }
+
+    return matrix;
+  }
+
+
+  public getMatrixsAlgorithm(index: number): FormControl {
+    return this.forms[index].get('algorithm') as FormControl ;
+  }
 
   public getMatrixs(index: number): FormArray {
     return this.forms[index].get('matrix') as FormArray
@@ -84,7 +119,7 @@ export class MatrixComponent  implements OnInit {
     }
   }
 
-  private showNewMatrix(newMatrix: any[]): void {
+  private showNewMatrix(newMatrix: any[],algorithm: string): void {
     this.getMatrix().clear();
     const rowLength = newMatrix[0].length;
     newMatrix.forEach(column =>{
@@ -97,7 +132,7 @@ export class MatrixComponent  implements OnInit {
       }
 
     })
-
+    this.form.get('algorithm')?.setValue(algorithm);
     this.forms.push(cloneDeep(this.form))
   }
 
@@ -116,11 +151,13 @@ export class MatrixComponent  implements OnInit {
   }
 
   public onRowChanged($event: Event) {
+    this.firstForm = null;
     this.countRow = +($event.target as any).value;
     this.generateMatrix();
   }
 
   public onColumnChanged($event: Event) {
+    this.firstForm = null;
     this.countColumn = +($event.target as any).value;
     this.generateMatrix();
   }
@@ -130,10 +167,12 @@ export class MatrixComponent  implements OnInit {
   }
 
   public sortMatrix(): void {
+    this.forms = [];
     this.firstForm = cloneDeep(this.form);
     const matrix = this.getArrayForForm();
-    this.showNewMatrix(matrix.sort(this.sortingMatrix) as [[]]);
-    const newMatrix = this.removeColumnAndRowMatrix(this.getArrayForForm());
-    this.showNewMatrix(newMatrix);
+    this.showNewMatrix(matrix.sort(this.sortingMatrix) as [[]],'сортировка');
+    const newMatrix = this.removeColumnAndRowMatrixFirstStep(this.getArrayForForm());
+    this.removeColumnAndRowMatrixTwoStep(newMatrix)
+    // this.showNewMatrix(newMatrix);
   }
 }

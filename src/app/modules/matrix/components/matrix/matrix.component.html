@@ -17,9 +17,16 @@
       </div>
     </div>
   </div>
-
     <table  [formGroup]="form"  class="table">
-      <tr *ngFor="let row of getMatrix(firstForm ? firstForm : form).controls">
+      <thead>
+      <tr>
+        <th scope="col" *ngFor="let row of $any(getMatrix(firstForm ? firstForm : form).controls)[0].controls;let columnIndex = index">{{ columnIndex > 0 ? columnIndex : ''}}</th>
+        <th scope="col">{{$any(getMatrix(firstForm ? firstForm : form).controls)[0].controls.length }}</th>
+
+      </tr>
+      </thead>
+      <tr *ngFor="let row of getMatrix(firstForm ? firstForm : form).controls;let rowIndex = index">
+        <th scope="row">{{rowIndex + 1}}</th>
         <td *ngFor="let col of $any(row).controls">
             <input type="number" [formControl]="col">
          </td>
@@ -31,8 +38,20 @@
   </div>
 
 <ng-container *ngFor="let newForm of forms;let i = index">
+  <br>
+  <span>{{ getMatrixsAlgorithm(i).value + ' итерация: ' + (i + 1)}}</span>
+  <br>
   <table [formGroup]="newForm"  class="table">
-    <tr *ngFor="let row of getMatrixs(i).controls">
+
+    <thead>
+    <tr>
+      <th scope="col" *ngFor="let row of getMatrixs(i).controls;let columnIndex = index">{{ columnIndex > 0 ? columnIndex : ''}}</th>
+      <th scope="col">{{getMatrixs(i).controls.length }}</th>
+    </tr>
+    </thead>
+
+    <tr *ngFor="let row of getMatrixs(i).controls;let rowIndex = index">
+      <th scope="row" *ngIf="$any(row).controls.length > 0">{{rowIndex + 1}}</th>
       <td *ngFor="let col of $any(row).controls">
         <input type="number" [formControl]="col">
       </td>
