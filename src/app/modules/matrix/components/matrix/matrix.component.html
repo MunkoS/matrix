@@ -1,5 +1,5 @@
 
-<div class="container">
+<div >
   <div class="card-body">
     <div class="form-row">
       <div class="form-group">
@@ -18,15 +18,26 @@
     </div>
   </div>
 
-    <table [formGroup]="form"  class="table">
-      <tr *ngFor="let row of getMatrix().controls">
+    <table  [formGroup]="form"  class="table">
+      <tr *ngFor="let row of getMatrix(firstForm ? firstForm : form).controls">
         <td *ngFor="let col of $any(row).controls">
-            <input [formControl]="col">
+            <input type="number" [formControl]="col">
          </td>
       </tr>
      </table>
 
   <div class="form-row">
-    <button type="button" (click)="calculate()" class="btn btn-primary">Рассчитать</button>
+    <button type="button" (click)="sortMatrix()" class="btn btn-primary">Рассчитать</button>
   </div>
+
+<ng-container *ngFor="let newForm of forms;let i = index">
+  <table [formGroup]="newForm"  class="table">
+    <tr *ngFor="let row of getMatrixs(i).controls">
+      <td *ngFor="let col of $any(row).controls">
+        <input type="number" [formControl]="col">
+      </td>
+    </tr>
+  </table>
+</ng-container>
+
 </div>
