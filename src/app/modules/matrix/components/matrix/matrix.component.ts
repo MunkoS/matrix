@@ -58,7 +58,7 @@ export class MatrixComponent  implements OnInit {
           (row as number[]).splice(deleteIndex - index,1);
         })
       })
-      this.showNewMatrix(matrix,'Удаление избыточный дисциплин ');
+      this.showNewMatrix(matrix,'Удаление избыточных дисциплин ');
       return this.removeColumnAndRowMatrixFirstStep(matrix);
     }
 
@@ -87,7 +87,7 @@ export class MatrixComponent  implements OnInit {
 
 
 
-      this.showNewMatrix(matrix,'Парето(оптимальное решение)');
+      this.showNewMatrix(matrix,'Парето-оптимальное решение ');
       currentIndex++;
       if(matrix[currentIndex] && currentColumn.length > 1){
         return this.removeColumnAndRowMatrixTwoStep(matrix,currentIndex);
