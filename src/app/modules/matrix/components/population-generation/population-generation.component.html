@@ -1,0 +1,99 @@
+
+<div [formGroup]="form">
+  <div class="card-body">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Количество хромосом</label>
+        <select  formControlName="countMatrix"  class="form-control">
+          <option [value]="+i" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">{{i}}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Количество дисциплин</label>
+        <select formControlName="countColumn" class="form-control" (change)="countColumnChanged($event)">
+          <option [value]="+i" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">{{i}}</option>
+        </select>
+      </div>
+    </div>
+
+    <ng-container *ngIf="countColumnCreditUnits.value.length > 0">
+      <div formArrayName="countColumnCreditUnits"  class="form-row"  *ngFor="let item of countColumnCreditUnits.controls; let i = index">
+        <div class="form-group">
+          <label>Количество зачетных единиц {{i + 1}} дисциплины</label>
+          <input  [formControlName]="i"  class="form-control" type="number">
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Количество компетенций</label>
+        <select formControlName="countCompetencies" class="form-control" (change)="countCompetenciesChanged($event)">
+          <option [value]="+i" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">{{i}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row" *ngIf="countColumnCreditUnits.value.length > 0 && countCompetenciesMatrix.value.length > 0">
+      <div class="form-group">
+        <label>Матрица закрытия компетенций</label>
+        <table formArrayName="countCompetenciesMatrix"  class="table">
+
+        <thead>
+            <tr>
+              <th scope="col" *ngFor="let row of countColumnCreditUnits.controls;let columnIndex = index">{{ columnIndex > 0 ? columnIndex : ''}}</th>
+              <th scope="col">{{countColumnCreditUnits.controls.length }}</th>
+            </tr>
+          </thead>
+
+          <tr *ngFor="let row of countCompetenciesMatrix.controls;let rowIndex = index">
+            <th scope="row" *ngIf="$any(row).controls.length > 0">{{rowIndex + 1}}</th>
+            <td *ngFor="let col of $any(row).controls">
+              <input type="number"  step="0.1" min="0" max="1" [formControl]="col">
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Количество блоков учебного плана</label>
+        <select class="form-control">
+          <option >2</option>
+        </select>
+      </div>
+    </div>
+
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Количество популяций</label>
+        <select formControlName="countPopulation" class="form-control">
+          <option [value]="i" *ngFor="let i of [10,20,30,40,50,60,70,80,90,100]">{{i}}</option>
+        </select>
+      </div>
+    </div>
+
+
+    <div class="form-row">
+      <button class="btn btn-primary" (click)="calculation()">Рассчитать</button>
+    </div>
+
+    <div class="form-row" *ngIf="matrixIteration.length > 0">
+      <div class="form-group" *ngFor="let iteration of matrixIteration;let iterationIndex = index">
+        <label>Поколение {{iterationIndex }} </label>
+        <table  class="table" *ngFor="let table of iteration">
+          <tr *ngFor="let row of table;let rowIndex = index">
+            <td *ngFor="let col of row">
+              {{col}}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
