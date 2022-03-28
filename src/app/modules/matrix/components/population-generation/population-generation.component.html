@@ -28,6 +28,19 @@
 
     <div class="form-row">
       <div class="form-group">
+        <label>Нижняя граница зачетных единиц</label>
+        <input  formControlName="bottomCreditUnits"  class="form-control" type="number">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Верхняя граница зачетных единиц</label>
+        <input  formControlName="topCreditUnits"  class="form-control" type="number">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
         <label>Количество компетенций</label>
         <select formControlName="countCompetencies" class="form-control" (change)="countCompetenciesChanged($event)">
           <option [value]="+i" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">{{i}}</option>
@@ -85,13 +98,20 @@
     <div class="form-row" *ngIf="matrixIteration.length > 0">
       <div class="form-group" *ngFor="let iteration of matrixIteration;let iterationIndex = index">
         <label>Поколение {{iterationIndex }} </label>
-        <table  class="table" *ngFor="let table of iteration">
-          <tr *ngFor="let row of table;let rowIndex = index">
-            <td *ngFor="let col of row">
-              {{col}}
-            </td>
+        <div *ngFor="let result of iteration.resultMatrixArray">
+       <table  class="table" >
+          <tr *ngFor="let row of result.matrix;let rowIndex = index">
+         <td *ngFor="let col of row">
+                {{col}}
+           </td>
           </tr>
         </table>
+          <div >Итог по матрице:</div>
+          <div >fMax: {{result.fMax}}</div>
+          <div >fX: {{result.fX}}</div>
+          <div >Зачетные единицы закрыты: {{result.creditUnits}}</div>
+          <div >Компетенции закрыты: {{result.closingCompetencies}}</div>
+        </div>
       </div>
     </div>
 
